@@ -1,0 +1,217 @@
+@import 'tailwindcss';
+@plugin "@tailwindcss/forms";
+@plugin '@tailwindcss/typography';
+@source '../node_modules/pliny';
+
+/* 1. 웹폰트 임포트 (파일 최상단) */
+/* 프리텐다드 (본문용) */
+@import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
+
+/* 어그로체 (제목용) */
+@font-face {
+  font-family: 'SBAggroB';
+  src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/noonfonts_2108@1.1/SBAggroB.woff')
+    format('woff');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@custom-variant dark (&:where(.dark, .dark *));
+
+/* 2. 통합 테마 설정 */
+@theme {
+  /* Font families: 프리텐다드를 가장 앞에 배치 */
+  --font-sans:
+    'Pretendard', var(--font-space-grotesk), ui-sans-serif, system-ui, sans-serif,
+    'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+
+  /* 커스텀 제목 폰트 변수 등록 */
+  --font-title: 'SBAggroB', sans-serif;
+
+  /* Colors (Primary - 도파민 레시피 컨셉) */
+  --color-primary-50: oklch(0.971 0.014 343.198);
+  --color-primary-100: oklch(0.948 0.028 342.258);
+  --color-primary-200: oklch(0.899 0.061 343.231);
+  --color-primary-300: oklch(0.823 0.12 346.018);
+  --color-primary-400: oklch(0.718 0.202 349.761);
+  --color-primary-500: oklch(0.656 0.241 354.308);
+  --color-primary-600: oklch(0.592 0.249 0.584);
+  --color-primary-700: oklch(0.525 0.223 3.958);
+  --color-primary-800: oklch(0.459 0.187 3.815);
+  --color-primary-900: oklch(0.408 0.153 2.432);
+  --color-primary-950: oklch(0.284 0.109 3.907);
+
+  --color-gray-50: oklch(0.985 0.002 247.839);
+  --color-gray-100: oklch(0.967 0.003 264.542);
+  --color-gray-200: oklch(0.928 0.006 264.531);
+  --color-gray-300: oklch(0.872 0.01 258.338);
+  --color-gray-400: oklch(0.707 0.022 261.325);
+  --color-gray-500: oklch(0.551 0.027 264.364);
+  --color-gray-600: oklch(0.446 0.03 256.802);
+  --color-gray-700: oklch(0.373 0.034 259.733);
+  --color-gray-800: oklch(0.278 0.033 256.848);
+  --color-gray-900: oklch(0.21 0.034 264.665);
+  --color-gray-950: oklch(0.13 0.028 261.692);
+
+  --line-height-11: 2.75rem;
+  --line-height-12: 3rem;
+  --line-height-13: 3.25rem;
+  --line-height-14: 3.5rem;
+
+  --z-60: 60;
+  --z-70: 70;
+  --z-80: 80;
+}
+
+/* 3. 베이스 레이어 설정: 실제 태그에 폰트 주입 */
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentColor);
+  }
+
+  body {
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* 모든 제목 태그와 .font-title 클래스에 어그로체 적용 */
+  h1,
+  h2,
+  h3,
+  h4,
+  .font-title {
+    font-family: var(--font-title);
+    letter-spacing: -0.03em; /* 굵은 폰트일수록 자간을 줄여야 예쁩니다 */
+  }
+
+  a,
+  button {
+    outline-color: var(--color-primary-500);
+  }
+
+  a:focus-visible,
+  button:focus-visible {
+    outline: 2px solid;
+    border-radius: var(--radius-sm);
+    outline-color: var(--color-primary-500);
+  }
+}
+
+/* 4. 유틸리티 레이어 (prose 및 애니메이션) */
+@layer utilities {
+  .prose {
+    & a {
+      color: var(--color-primary-500);
+      &:hover {
+        color: var(--color-primary-600);
+      }
+      & code {
+        color: var(--color-primary-400);
+      }
+    }
+    & :where(h1, h2) {
+      font-weight: 700;
+      letter-spacing: var(--tracking-tight);
+    }
+    & h3 {
+      font-weight: 600;
+    }
+    & :where(code):not(pre code) {
+      color: var(--color-indigo-500);
+    }
+  }
+
+  .prose-invert {
+    & a {
+      color: var(--color-primary-500);
+      &:hover {
+        color: var(--color-primary-400);
+      }
+      & code {
+        color: var(--color-primary-400);
+      }
+    }
+    & :where(h1, h2, h3, h4, h5, h6) {
+      color: var(--color-gray-100);
+    }
+  }
+
+  /* 애니메이션 효과 */
+  .animate-gradient {
+    background-size: 200% 200%;
+    animation: gradient 3s ease infinite;
+  }
+
+  .animate-float {
+    animation: float 6s ease-in-out infinite;
+  }
+
+  .glass {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+  }
+
+  @layer utilities {
+    .pick-card {
+      @apply my-8 overflow-hidden rounded-2xl border border-gray-100 bg-white shadow-sm dark:border-gray-800 dark:bg-gray-900;
+    }
+
+    .pick-header {
+      @apply flex items-center gap-2 bg-orange-500 px-4 py-2 text-[11px] font-black tracking-widest text-white uppercase;
+    }
+
+    .pick-body {
+      @apply flex flex-col gap-3 p-5;
+    }
+
+    .pick-link {
+      @apply inline-flex items-center justify-between rounded-xl bg-gray-50 px-4 py-3 text-sm font-bold text-gray-900 transition-colors hover:bg-orange-50 hover:text-orange-600 dark:bg-gray-800 dark:text-gray-100 dark:hover:bg-gray-700;
+    }
+  }
+}
+
+/* 5. Keyframes */
+@keyframes gradient {
+  0%,
+  100% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+/* 기타 스타일 보정 */
+.task-list-item {
+  @apply list-none;
+}
+.footnotes {
+  @apply mt-12 border-t border-gray-200 pt-8 dark:border-gray-700;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  scrollbar-width: none;
+}
+
+html {
+  scroll-behavior: smooth;
+}
