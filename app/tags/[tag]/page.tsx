@@ -13,11 +13,10 @@ export async function generateMetadata(props: {
   params: Promise<{ tag: string }>
 }): Promise<Metadata> {
   const params = await props.params
-  // URL 인코딩된 태그를 다시 한글로 복구
   const tag = decodeURIComponent(params.tag)
   return genPageMetadata({
     title: tag,
-    description: `${siteMetadata.title} ${tag} 태그 관련 레시피`,
+    description: `${siteMetadata.title} ${tag} 태그 레시피`,
     alternates: {
       canonical: './',
       types: {
@@ -30,8 +29,7 @@ export async function generateMetadata(props: {
 export const generateStaticParams = async () => {
   const tagCounts = tagData as Record<string, number>
   const tagKeys = Object.keys(tagCounts)
-  // Vercel 빌드 시 한글 경로 문제를 방지하기 위해 encodeURI를 제거하고
-  // github-slugger의 slug 형식을 따르도록 합니다.
+  // 빌드 시 한글 깨짐 방지를 위해 slug 처리만 해서 반환합니다.
   return tagKeys.map((tag) => ({
     tag: slug(tag),
   }))
@@ -39,20 +37,18 @@ export const generateStaticParams = async () => {
 
 export default async function TagPage(props: { params: Promise<{ tag: string }> }) {
   const params = await props.params
-  // 1. 주소창의 %EA... 값을 "혼밥" 같은 한글로 변환
   const tag = decodeURIComponent(params.tag)
 
-  // 2. 제목 처리 (한글 태그가 깨지지 않게 처리)
+  // 제목에 # 추가
   const title = tag.startsWith('#') ? tag : `#${tag}`
 
-  // 3. 필터링 로직 강화: 슬러그화된 태그와 원본 태그를 모두 비교
   const filteredPosts = allCoreContent(
     sortPosts(
       allBlogs.filter((post) => {
         if (!post.tags) return false
         return post.tags.some((t) => {
+          // 원본, 슬러그, 디코딩된 값 모두 대조 (매칭 확률 극대화)
           const s = slug(t)
-          // 슬러그 형태(예: hon-bab) 또는 원본 한글(혼밥)이 URL 태그와 일치하는지 확인
           return s === tag || t === tag || s === decodeURIComponent(tag)
         })
       })
